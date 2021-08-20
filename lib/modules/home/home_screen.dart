@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce_app/component/component.dart';
 import 'package:e_commerce_app/component/constant.dart';
 import 'package:e_commerce_app/models/product_model.dart';
+import 'package:e_commerce_app/modules/product_info/product_info_screen.dart';
 import 'package:e_commerce_app/services/store.dart';
 import 'package:flutter/material.dart';
 
@@ -96,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
             body: TabBarView(
               children: [
                 manView(),
-                productView(kWomen),
-                productView(kBaby),
-                productView(kShoes),
+                productView(kWomen, _products),
+                productView(kBaby, _products),
+                productView(kShoes, _products),
               ],
             ),
           ),
@@ -147,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           _products = [...products];
           products.clear();
-          products = getProductCategory(kMan);
+          products = getProductCategory(kMan, _products);
           return GridView.builder(
             physics: BouncingScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -157,6 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, ProductInfoScreen.id,
+                        arguments: products[index]);
+                  },
                   onTapUp: (details) {
                     double dx = details.globalPosition.dx;
                     double dy = details.globalPosition.dy;
@@ -223,89 +229,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
         }
       },
-    );
-  }
-
-  List<ProductModel> getProductCategory(String category) {
-    List<ProductModel> products = [];
-    for (var product in _products) {
-      if (product.pCategory == category) {
-        products.add(product);
-      }
-    }
-    return products;
-  }
-
-  Widget productView(String category) {
-    List<ProductModel> products = [];
-    products = getProductCategory(category);
-    return GridView.builder(
-      physics: BouncingScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
-      itemBuilder: (context, index) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: GestureDetector(
-            onTapUp: (details) {
-              double dx = details.globalPosition.dx;
-              double dy = details.globalPosition.dy;
-              double dx2 = MediaQuery.of(context).size.width - dx;
-              double dy2 = MediaQuery.of(context).size.height - dy;
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(dx, dy, dx2, dy2),
-                items: [],
-              );
-            },
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image(
-                    image: NetworkImage(
-                      products[index].pLocation,
-                    ),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    color: Colors.white.withOpacity(0.7),
-                    width: MediaQuery.of(context).size.width,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${products[index].pName}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            '\$ ${products[index].pPrice}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      itemCount: products.length,
     );
   }
 }

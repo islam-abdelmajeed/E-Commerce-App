@@ -1,6 +1,7 @@
 import 'package:e_commerce_app/modules/admin/edit_product_screen.dart';
 import 'package:e_commerce_app/modules/home/home_screen.dart';
 import 'package:e_commerce_app/modules/login_module/login_screen.dart';
+import 'package:e_commerce_app/modules/product_info/product_info_screen.dart';
 import 'package:e_commerce_app/providers/admin_mode.dart';
 import 'package:e_commerce_app/providers/modal_hud.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,8 +31,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: HomeScreen(),
         routes: {
-      EditProductScreen.id:(context)=>EditProductScreen(),
-      },
+          EditProductScreen.id: (context) => EditProductScreen(),
+          ProductInfoScreen.id: (context) => ProductInfoScreen(),
+        },
       ),
     );
   }
