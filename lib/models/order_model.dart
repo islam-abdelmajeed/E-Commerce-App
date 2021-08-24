@@ -1,6 +1,9 @@
-class OrderModel {
-  int productPrice;
-  String address;
+import 'package:flutter/cupertino.dart';
 
-  OrderModel(this.address, this.productPrice);
+class OrderModel {
+ @required int totalPrice;
+ @required String address;
+ String documentId;
+
+  OrderModel({this.address, this.totalPrice, this.documentId});
 }

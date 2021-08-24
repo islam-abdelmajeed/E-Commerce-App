@@ -1,24 +1,21 @@
-import 'package:e_commerce_app/component/component.dart';
 import 'package:e_commerce_app/component/constant.dart';
 import 'package:e_commerce_app/models/product_model.dart';
+import 'package:e_commerce_app/modules/cart_screen/cart_screen.dart';
+import 'package:e_commerce_app/providers/cartItems.dart';
+import 'package:e_commerce_app/providers/counter_product.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ProductInfoScreen extends StatefulWidget {
+class ProductInfoScreen extends StatelessWidget {
   static String id = 'productInfo';
 
   @override
-  _ProductInfoScreenState createState() => _ProductInfoScreenState();
-}
-
-class _ProductInfoScreenState extends State<ProductInfoScreen> {
-  int counter = 0;
-
-  @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    final CountProduct count = Provider.of<CountProduct>(context);
+    final CartItem cart = Provider.of<CartItem>(context);
     ProductModel product = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Stack(
@@ -38,8 +35,21 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.arrow_back_ios),
-                Icon(Icons.shopping_cart),
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      CartScreen.id,
+                    );
+                  },
+                  icon: Icon(Icons.shopping_cart),
+                ),
               ],
             ),
           ),
@@ -57,12 +67,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
                               product.pName,
                               style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                             SizedBox(
@@ -71,7 +83,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                             Text(
                               '\$${product.pPrice}',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 25,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -94,7 +106,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             MaterialButton(
-                              onPressed:decrease,
+                              onPressed: () => count.decrease(),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
@@ -110,7 +122,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                               ),
                             ),
                             Text(
-                              counter.toString(),
+                              count.counter.toString(),
                               style: TextStyle(
                                 fontSize: 50.0,
                                 fontWeight: FontWeight.w900,
@@ -118,7 +130,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                               ),
                             ),
                             MaterialButton(
-                              onPressed: increase,
+                              onPressed: () => count.increase(),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
@@ -147,7 +159,31 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    product.count = count.counter;
+                    var productsInCart = cart.product;
+                    bool exist = false;
+                    for (var productInCart in productsInCart) {
+                      if (productInCart.pName == product.pName) {
+                        exist = true;
+                      }
+                    }
+                    if (exist) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('you\'ve added this item before.'),
+                        ),
+                      );
+                    }else{
+                      cart.addProduct(product);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Added to your cart'),
+                        ),
+                      );
+                      count.counter = 1;
+                    }
+                  },
                   color: kMainColor,
                   minWidth: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.1,
@@ -164,19 +200,5 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         ],
       ),
     );
-  }
-
-  increase() {
-    setState(() {
-      counter++;
-    });
-  }
-
-  decrease() {
-    if (counter > 0) {
-      setState(() {
-        counter--;
-      });
-    }
   }
 }

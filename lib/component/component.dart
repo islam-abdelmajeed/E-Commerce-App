@@ -7,6 +7,7 @@ Widget customTextField({
   @required String hint,
    IconData icon,
    Function validate,
+   Function onChange,
   Function onClick,
   bool isPassword = false,
   double radius = 20.0,
@@ -15,6 +16,7 @@ Widget customTextField({
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
         validator: validate,
+        onChanged: onChange,
         obscureText: isPassword,
         onSaved:onClick ,
         cursorColor: kMainColor,
@@ -105,11 +107,14 @@ Widget productView(String category, List allProduct) {
             double dy = details.globalPosition.dy;
             double dx2 = MediaQuery.of(context).size.width - dx;
             double dy2 = MediaQuery.of(context).size.height - dy;
+           try{
             showMenu(
               context: context,
               position: RelativeRect.fromLTRB(dx, dy, dx2, dy2),
               items: [],
-            );
+            );}catch(ex){
+             print(ex);
+            }
           },
           child: Stack(
             children: [
@@ -172,4 +177,24 @@ List<ProductModel> getProductCategory(String category,List<ProductModel> allProd
   print(ex);
   }
   return products;
+}
+
+class MyPopupMenuItem<T> extends PopupMenuItem<T> {
+  final Widget child;
+  final Function onClick;
+
+  MyPopupMenuItem({@required this.child, @required this.onClick});
+
+  @override
+  PopupMenuItemState<T, PopupMenuItem<T>> createState() {
+    return MyPopupMenuItemState();
+  }
+}
+
+class MyPopupMenuItemState<T, PopupMenuItem>
+    extends PopupMenuItemState<T, MyPopupMenuItem<T>> {
+  @override
+  void handleTap() {
+    widget.onClick();
+  }
 }

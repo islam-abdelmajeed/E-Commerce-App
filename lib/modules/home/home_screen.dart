@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/component/component.dart';
 import 'package:e_commerce_app/component/constant.dart';
 import 'package:e_commerce_app/models/product_model.dart';
+import 'package:e_commerce_app/modules/cart_screen/cart_screen.dart';
 import 'package:e_commerce_app/modules/product_info/product_info_screen.dart';
 import 'package:e_commerce_app/services/store.dart';
+import 'package:e_commerce_app/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(
               backgroundColor: Colors.white,
               elevation: 0.0,
-              bottom: TabBar(
+              bottom:bottomIndex==1? null : TabBar(
                 indicatorColor: kMainColor,
                 onTap: (value) {
                   setState(() {
@@ -78,24 +80,16 @@ class _HomeScreenState extends State<HomeScreen> {
               currentIndex: bottomIndex,
               items: [
                 BottomNavigationBarItem(
-                  label: 'Just Test',
-                  icon: Icon(Icons.person),
+                  label: 'Home',
+                  icon: Icon(Icons.home),
                 ),
                 BottomNavigationBarItem(
-                  label: 'Just Test',
-                  icon: Icon(Icons.person),
-                ),
-                BottomNavigationBarItem(
-                  label: 'Just Test',
-                  icon: Icon(Icons.person),
-                ),
-                BottomNavigationBarItem(
-                  label: 'Just Test',
-                  icon: Icon(Icons.person),
+                  label: 'Settings',
+                  icon: Icon(Icons.settings),
                 ),
               ],
             ),
-            body: TabBarView(
+            body: bottomIndex==1?SettingsScreen() : TabBarView(
               children: [
                 manView(),
                 productView(kWomen, _products),
@@ -113,14 +107,19 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Text(
-                    'Discover'.toUpperCase(),
+                   bottomIndex==1? 'Settings'.toUpperCase(): 'Discover'.toUpperCase(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Spacer(),
-                  Icon(Icons.shopping_cart),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, CartScreen.id);
+                    },
+                    icon: Icon(Icons.shopping_cart),
+                  ),
                 ],
               ),
             ),

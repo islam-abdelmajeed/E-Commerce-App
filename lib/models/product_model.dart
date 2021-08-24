@@ -13,9 +13,12 @@ class ProductModel {
   String pCategory;
   @required
   String pId;
+  @required
+  int count;
 
   ProductModel(
-      {this.pCategory,
+      {this.count,
+      this.pCategory,
       this.pDescription,
       this.pLocation,
       this.pName,
